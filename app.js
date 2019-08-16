@@ -1,7 +1,9 @@
 const express = require("express");
+const exphbs = require("express-handlebars");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
+const index = require("./routes/index");
 const auth = require("./routes/auth");
 const passport = require("passport");
 const bodyParser = require("body-parser");
@@ -16,6 +18,13 @@ mongoose
   })
   .catch(err => console.log("err", err));
 require("./config/passport")(passport);
+app.engine(
+  "handlebars",
+  exphbs({
+    defaultLayout: "main"
+  })
+);
+app.set("view engine", "handlebars");
 app.use(cookieParser());
 app.use(
   session({
@@ -32,6 +41,7 @@ app.use((req, res, next) => {
   next();
 });
 app.use("/auth", auth);
+app.use("/", index);
 app.get("/", (req, res) => {
   res.send("It works");
 });
