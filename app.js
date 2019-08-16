@@ -1,10 +1,12 @@
 const express = require("express");
+const path = require("path");
 const exphbs = require("express-handlebars");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const index = require("./routes/index");
 const auth = require("./routes/auth");
+const stories = require("./routes/stories");
 const passport = require("passport");
 const bodyParser = require("body-parser");
 const app = express();
@@ -40,6 +42,8 @@ app.use((req, res, next) => {
   res.locals.user = req.user || null;
   next();
 });
+app.use(express.static(path.join(__dirname, "public")));
+app.use("/stories", stories);
 app.use("/auth", auth);
 app.use("/", index);
 app.get("/", (req, res) => {
