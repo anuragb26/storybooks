@@ -1,5 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const cookieParser = require("cookie-parser");
+const session = require("express-session");
 const auth = require("./routes/auth");
 const passport = require("passport");
 const bodyParser = require("body-parser");
@@ -14,7 +16,21 @@ mongoose
   })
   .catch(err => console.log("err", err));
 require("./config/passport")(passport);
-
+app.use(cookieParser());
+app.use(
+  session({
+    secret: "secret",
+    resave: false,
+    saveUninitialized: false
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+// Set global variables
+app.use((req, res, next) => {
+  res.locals.user = req.user || null;
+  next();
+});
 app.use("/auth", auth);
 app.get("/", (req, res) => {
   res.send("It works");

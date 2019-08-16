@@ -17,4 +17,16 @@ router.get(
     res.redirect("/dashboard");
   }
 );
+router.get("/verify", (req, res) => {
+  console.log("req", req.body);
+  if (req.user) {
+    console.log("user", req.user);
+  } else {
+    console.log("Not Auth");
+  }
+});
+router.get("/logout", (req, res) => {
+  req.logout();
+  res.redirect("/");
+});
 module.exports = router;
