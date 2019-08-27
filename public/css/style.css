@@ -15,3 +15,13 @@ main {
 .footer {
   margin-top: 20px;
 }
+
+.story {
+  height: 120px;
+}
+.dash-status {
+  text-transform: uppercase;
+}
+#delete-form {
+  display: inline;
+}

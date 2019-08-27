@@ -12,7 +12,9 @@ const bodyParser = require("body-parser");
 const app = express();
 const port = process.env.PORT || 5000;
 const { mongoURI } = require("./config/keys");
+const { truncate, stripTags, formatDate, select } = require("./helpers/hbs");
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 mongoose
   .connect(mongoURI, { useNewUrlParser: true })
   .then(() => {
@@ -23,6 +25,7 @@ require("./config/passport")(passport);
 app.engine(
   "handlebars",
   exphbs({
+    helpers: { truncate, stripTags, formatDate, select },
     defaultLayout: "main"
   })
 );
