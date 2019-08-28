@@ -9,12 +9,14 @@ const auth = require("./routes/auth");
 const stories = require("./routes/stories");
 const passport = require("passport");
 const bodyParser = require("body-parser");
+const methodOverride = require("method-override");
 const app = express();
 const port = process.env.PORT || 5000;
 const { mongoURI } = require("./config/keys");
 const { truncate, stripTags, formatDate, select } = require("./helpers/hbs");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(methodOverride("_method"));
 mongoose
   .connect(mongoURI, { useNewUrlParser: true })
   .then(() => {
