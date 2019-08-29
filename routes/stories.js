@@ -25,6 +25,7 @@ router.get("/show/:id", (req, res) => {
     .populate("comments.commentUser")
     .exec((err, story) => {
       if (story.status === "public") {
+        res.render("stories/show", { story });
       } else {
         if (req.user) {
           if (req.user.id == story.user._id) {
