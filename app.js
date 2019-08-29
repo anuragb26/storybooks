@@ -13,7 +13,13 @@ const methodOverride = require("method-override");
 const app = express();
 const port = process.env.PORT || 5000;
 const { mongoURI } = require("./config/keys");
-const { truncate, stripTags, formatDate, select } = require("./helpers/hbs");
+const {
+  truncate,
+  stripTags,
+  formatDate,
+  select,
+  editIcon
+} = require("./helpers/hbs");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(methodOverride("_method"));
@@ -27,7 +33,7 @@ require("./config/passport")(passport);
 app.engine(
   "handlebars",
   exphbs({
-    helpers: { truncate, stripTags, formatDate, select },
+    helpers: { truncate, stripTags, formatDate, select, editIcon },
     defaultLayout: "main"
   })
 );

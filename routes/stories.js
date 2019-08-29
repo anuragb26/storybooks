@@ -5,27 +5,56 @@ const { ensureAuthenticated } = require("../helpers/auth");
 
 router.get("/", (req, res) => {
   Story.find({ status: "public" })
+    .sort({ date: "desc" })
     .populate("user", "image firstName lastName")
     .exec((err, data) => {
       res.render("stories/index", { stories: data });
     });
 });
 
+router.get("/user/:userId", (req, res) => {
+  Story.find({ user: req.params.userId, status: "public" })
+    .populate("user")
+    .exec((err, data) => {
+      res.render("stories/index", { stories: data });
+    });
+});
 router.get("/show/:id", (req, res) => {
   Story.findOne({ _id: req.params.id })
     .populate("user")
+    .populate("comments.commentUser")
     .exec((err, story) => {
-      res.render("stories/show", { story });
+      if (story.status === "public") {
+      } else {
+        if (req.user) {
+          if (req.user.id == story.user._id) {
+            res.render("stories/show", { story });
+          } else {
+            res.redirect("/stories/");
+          }
+        } else {
+          res.redirect("/stories/");
+        }
+      }
     });
 });
 router.get("/add", ensureAuthenticated, (req, res) => {
   res.render("stories/add");
 });
-
+router.get("/my", ensureAuthenticated, (req, res) => {
+  Story.find({ user: req.user.id })
+    .populate("user")
+    .exec((err, data) => {
+      res.render("stories/index", { stories: data });
+    });
+});
 router.get("/edit/:id", ensureAuthenticated, (req, res) => {
   Story.findOne({ _id: req.params.id }).then(story => {
-    console.log("story in edit", story.title);
-    res.render("stories/edit", { story });
+    if (story.user != req.user.id) {
+      res.redirect("/stories");
+    } else {
+      res.render("stories/edit", { story });
+    }
   });
 });
 
@@ -60,6 +89,21 @@ router.put("/:id", (req, res) => {
 router.delete("/:id", (req, res) => {
   Story.remove({ _id: req.params.id }).then(() => {
     res.redirect("/dashboard");
+  });
+});
+
+router.post("/comment/:id", (req, res) => {
+  Story.findOne({
+    _id: req.params.id
+  }).then(story => {
+    const newComment = {
+      commentBody: req.body.commentBody,
+      commentUser: req.user.id
+    };
+    story.comments.unshift(newComment);
+    story.save().then(story => {
+      res.redirect(`/stories/show/${story.id}`);
+    });
   });
 });
 module.exports = router;
